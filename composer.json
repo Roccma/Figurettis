@@ -1,0 +1,7 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "5.2.9",
+        "facebook/php-sdk-v4" : "5.*",
+        "slim/slim" : "^3.0"
+    }
+}
