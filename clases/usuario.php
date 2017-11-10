@@ -2,14 +2,14 @@
 require_once("clases/clase_base.php");
 require_once("clases/db.php");
 class Usuario extends ClaseBase{
-	private $ci;
-	private $contrasenia;
+	private $nickname;
 	private $nombre;
 	private $apellido;
-	private $email;
-	private $fotoperfil;
-	private $funcionario;
-	private $enviarcorreo;
+	private $fechaNacimiento;
+	private $contacto;
+	private $fotoPerfil;
+	private $contrasenia;
+	private $aplicacion;
 	/* Constructor */
 
 	public function __construct($obj=NULL){
@@ -24,46 +24,42 @@ class Usuario extends ClaseBase{
 	}
 
 	/* Getters */
-	public function getCi(){
-		return $this->ci;
-	}
-
-	public function getContrasenia(){
-		return $this->contrasenia;
+	public function getNickname(){
+		return $this->nickname;
 	}
 
 	public function getNombre(){
 		return $this->nombre;
 	}
 
+	public function getFechaNacimiento(){
+		return $this->fechaNacimiento;
+	}
+
 	public function getApellido(){
 		return $this->apellido;
 	}
 
-	public function getEmail(){
-		return $this->email;
+	public function getContacto(){
+		return $this->contacto;
 	}
 
-	public function getFotoperfil(){
-		return $this->fotoperfil;
+	public function getFotoPerfil(){
+		return $this->fotoPerfil;
 	}
 
-	public function getFuncionario(){
-		return $this->funcionario;
+	public function getContrasenia(){
+		return $this->contrasenia;
 	}
 
-	public function getEnviarcorreo(){
-		return $this->enviarcorreo;
+	public function getAplicacion(){
+		return $this->aplicacion;
 	}
 
 	/* Setters */
 
-	public function setCi($ci){
-		$this->ci = $ci;
-	}
-
-	public function setContrasenia($psw){
-		$this->contrasenia = $psw;
+	public function setNickname($nickname){
+		$this->nickname = $nickname;
 	}
 
 	public function setNombre($nombre){
@@ -74,25 +70,33 @@ class Usuario extends ClaseBase{
 		$this->apellido = $apellido;
 	}
 
-	public function setEmail($email){
-		$this->email = $email;
+	public function setFechaNacimiento($fechaNacimiento){
+		$this->fechaNacimiento = $fechaNacimiento;
 	}
 
-	public function setFotoperfil($fotoperfil){
-		$this->fotoperfil = $fotoperfil;
+	public function setContacto($contacto){
+		$this->contacto = $contacto;
 	}
 
-	public function setFuncionario($funcionario){
-		$this->funcionario = $funcionario;
+	public function setFotoPerfil($fotoPerfil){
+		$this->fotoPerfil = $fotoPerfil;
+	}
+
+	public function setContrasenia($contrasenia){
+		$this->contrasenia = $contrasenia;
+	}
+
+	public function setAplicacion($aplicacion){
+		$this->aplicacion = $aplicacion;
 	}
 
 	public function login(){
 
-		$sql = "SELECT * FROM usuarios WHERE ci=? AND contrasenia = ?";
+		$sql = "SELECT * FROM usuarios WHERE nickname=? AND contrasenia = ?";
 		
 		$stmt = DB::conexion()->prepare($sql);
 		$pass = sha1($this->contrasenia);
-		$stmt->bind_param("is", $this->ci, $pass);
+		$stmt->bind_param("ss", $this->nickname, $pass);
 
 		$result = $stmt->execute();
 		
@@ -102,13 +106,46 @@ class Usuario extends ClaseBase{
 
 	}
 
-	public function signUp(){
-		$sql = "INSERT INTO usuarios VALUES (?,?,?,?,?,?,?,?)";
-
+	public function getSessionData(){
+		$sql = "SELECT * FROM usuarios WHERE nickname = ?";
 		$stmt = DB::conexion()->prepare($sql);
-		$pass = sha1($this->contrasenia);
+		$stmt->bind_param("s", $this->nickname);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		while($usuario = $result->fetch_object()){
+			$u = new Usuario(array("nickname" => $this->nickname,
+								"nombre" => utf8_encode($usuario->nombre),
+								"apellido" => utf8_encode($usuario->apellido),
+								"contacto" => $usuario->contacto,
+								"fotoPerfil" => $usuario->fotoPerfil,
+								"aplicacion" => $usuario->aplicacion));
+		}
 
-		$stmt->bind_param("isssssii", $this->ci, $pass,$this->nombre,$this->apellido, $this->email, $this->fotoperfil, $this->funcionario ,$this->enviarcorreo);
+		return $u;	
+	}
+
+	public function existeUsuario(){
+
+		$sql = "SELECT * FROM usuarios WHERE nickname=?";
+		
+		$stmt = DB::conexion()->prepare($sql);
+		$stmt->bind_param("s", $this->nickname);
+
+		$result = $stmt->execute();
+		
+		$stmt->store_result();
+		
+		return $stmt->num_rows();
+
+	}
+	
+	public function insert(){
+		$sql = "INSERT INTO usuarios VALUES (?,?,?, '1997-01-01', ?,?,?,?)";
+		//echo "aca: " . $this->nickname. $this->nombre. $this->apellido. $this->contacto. $this->fotoPerfil. $this->contrasenia. $this->nickname;
+		$stmt = DB::conexion()->prepare($sql);
+		//$pass = sha1($this->contrasenia);
+
+		$stmt->bind_param('sssssss', $this->nickname, $this->nombre,$this->apellido, $this->contacto, $this->fotoPerfil, $this->contrasenia ,$this->aplicacion);
 
 		$rc=$stmt->execute();
 
@@ -120,7 +157,7 @@ class Usuario extends ClaseBase{
 		}
 
 	}
-
+/*
 	public function existeCedula(){
 		$sql = "SELECT * FROM usuarios WHERE ci=?";
 
@@ -224,7 +261,7 @@ class Usuario extends ClaseBase{
 		$stmt->store_result();
 		return $stmt->num_rows();
 
-	}		
+	}	*/	
 
 } 
 
