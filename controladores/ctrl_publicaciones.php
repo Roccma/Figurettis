@@ -11,21 +11,10 @@ class ControladorPublicaciones extends ControladorIndex{
 		$publicacion = new Publicacion();
 
 		$result = $publicacion->getAllPublicaciones();
-		// $res = [];
-		// foreach ($result as $key => $value) {
-		// 	$arrayName = array('codigo' => $value->getCodigo(),
-		// 				'nicknameUsuario' => $value->getNicknameUsuario(),
-		// 				'numeroFigurita' => $value->getNumeroFigurita(),
-		// 				'fechaHora' => $value->getFechaHora(),
-		// 				'cantidad' => $value->getCantidad(),
-		// 				'estado' => $value->getEstado()
-		// 		);
-		// 	array_push($res, $arrayName);
-		// }
 		$resultFinal = array('results'=>$result);
 		echo json_encode($resultFinal);
+		}
 
-	}
 }
 
 ?>

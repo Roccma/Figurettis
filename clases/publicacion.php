@@ -8,10 +8,19 @@ class Publicacion extends ClaseBase{
 	private $fechaHora;
 	private $cantidad;
 	private $estado;
+// ////
+
+    private $nombreJugador;
+    private $imagenFigurita;
+    private $imagenBandera;
+
+
 
 	public function __construct($obj=NULL){
 		if(isset($obj)){
+
 			foreach ($obj as $key => $value) {
+                // echo $key;
 				$this->$key=$value;
 			}
 		}
@@ -20,6 +29,14 @@ class Publicacion extends ClaseBase{
 		parent::__construct($tabla);
 	}
 
+    // public function __construct($obj=NUL){
+    //     echo $obj;
+    //     if(isset($obj)){
+    //         foreach ($obj as $key => $value) {
+    //             $this->$key=$value;
+    //         }
+    //     }
+    // }
 
     /**
      * @return mixed
@@ -141,31 +158,85 @@ class Publicacion extends ClaseBase{
         return $this;
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getNombreJugador()
+    {
+        return $this->nombreJugador;
+    }
+
+    /**
+     * @param mixed $nombreJugador
+     *
+     * @return self
+     */
+    public function setNombreJugador($nombreJugador)
+    {
+        $this->nombreJugador = $nombreJugador;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImagenFigurita()
+    {
+        return $this->imagenFigurita;
+    }
+
+    /**
+     * @param mixed $imagenFigurita
+     *
+     * @return self
+     */
+    public function setImagenFigurita($imagenFigurita)
+    {
+        $this->imagenFigurita = $imagenFigurita;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImagenBandera()
+    {
+        return $this->imagenBandera;
+    }
+
+    /**
+     * @param mixed $imagenBandera
+     *
+     * @return self
+     */
+    public function setImagenBandera($imagenBandera)
+    {
+        $this->imagenBandera = $imagenBandera;
+
+        return $this;
+    }
+    
     public function getAllPublicaciones(){
-    	$sql = "SELECT f.nombre, f.numero, f.imagen, p.cantidad, p.fechaHora  FROM publicaciones as p, figuritas as f WHERE f.numero = p.numeroFigurita AND p.estado = 1";
+    	$sql = "SELECT f.nombre, f.numero, f.imagen, p.* , paises.bandera FROM publicaciones as p, figuritas as f, paises WHERE f.numero = p.numeroFigurita AND f.codigoPais = paises.codigo AND p.estado = 1";
     	$stmt = DB::conexion()->prepare($sql);
     	$stmt->execute();
     	$result = $stmt->get_result();
     	$publicaciones = [];
     	while($publicacion = $result->fetch_object()){
-    		// $p = new Publicacion(array("codigo"=>$publicacion->codigo,
-    		// 						"nicknameUsuario"=>utf8_encode($publicacion->nicknameUsuario),
-    		// 						"numeroFigurita"=>$publicacion->numeroFigurita,
-    		// 						"fechaHora"=>$publicacion->fechaHora,
-    		// 						"cantidad"=>$publicacion->cantidad,
-    		// 						"estado"=>$publicacion->estado
-    		// 					));
-    		// return $p;
             $p = array("nombre" => $publicacion->nombre ,
                     "numero" => $publicacion->numero,
                     "imagen" => $publicacion->imagen,
                     "cantidad" => $publicacion->cantidad,
-                    "fechaHora" => $publicacion->fechaHora
+                    "fechaHora" => $publicacion->fechaHora,
+                    "bandera" => $publicacion->bandera
+
              );
     		array_push($publicaciones,$p);
     	}
     	return $publicaciones;
-    	return $result;
     }
 }
 
